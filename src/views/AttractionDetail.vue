@@ -124,7 +124,7 @@ function goBack() {
   height: 50px;
   font-size: 25px;
   font-weight: 500;
-  color: rgb(158, 157, 157);
+  color: rgb(0, 0, 0);
 }
 .inner-container {
   margin-top: 30px;
@@ -142,6 +142,7 @@ function goBack() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  box-shadow: 7.272px 10px 30px 0px rgba(0, 0, 0, 0.15);
 }
 
 .att_description {
@@ -191,7 +192,7 @@ function goBack() {
 }
 .map-box {
   margin-top: 30px;
-  border: 2px solid black;
+  border: 1.2px solid black;
   height: 600px;
 }
 .att_review {
