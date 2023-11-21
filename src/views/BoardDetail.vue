@@ -17,14 +17,14 @@ export default {
     <div class="tab">
       <v-icon
         color="gray"
-        size="40"
+        size="30"
         icon="mdi-arrow-left"
         @click="goBack"
       ></v-icon>
       <span style="padding-left: 20px"></span>
       여행 게시판
     </div>
-    <hr size="5" color="lightgray" width="100%" />
+    <hr size="1" color="black" width="100%" />
     <div class="article_title">글 제목</div>
     <div style="padding-top: 20px"></div>
     <div class="article_user">
@@ -113,9 +113,9 @@ export default {
 }
 .tab {
   height: 50px;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: 500;
-  color: rgb(158, 157, 157);
+  color: rgb(0, 0, 0);
 }
 .article_title {
   margin-top: 30px;
