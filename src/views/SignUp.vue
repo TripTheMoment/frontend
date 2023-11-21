@@ -3,6 +3,10 @@ const emailRules = [
   (v) => !!v || "이름을 입력해주세요",
   (v) => (v && v.length <= 6) || "이름은 6글자를 넘을 수 없습니다",
 ];
+
+const alert = () => {
+  console.log("dfdf");
+};
 </script>
 
 <template>
@@ -17,6 +21,7 @@ const emailRules = [
           name="email"
           :rules="emailRules"
           placeholder="이메일"
+          @blur="alert"
         />
 
         <input type="password" name="password" placeholder="비밀번호" />

@@ -1,6 +1,22 @@
 <script setup>
 import { ref } from "vue";
-import router from "@/router";
+
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import { useBoardStore } from "@/store/board";
+import KakaoMap from "@/components/KakaoMap.vue";
+
+const boardStore = useBoardStore();
+const article = computed(() => boardStore.article); //store 데이터를 반응형으로 가져오기
+const router = useRouter();
+const route = useRoute();
+
+boardStore.getArticle(route.params.id);
+
+const url = article.value;
+console.log(url);
+//boardStore.getArticle(route.params.articleNo);
+
 const rating = ref(3.5);
 function goBack() {
   router.go(-1);
@@ -24,7 +40,8 @@ function goBack() {
       <div class="att_image">
         <img
           class="att_img"
-          src="https://www.expedia.co.kr/stories/wp-content/uploads/2022/07/o-5BoDBNeIkxXi7ylqMHtTZ3Duk.jpeg"
+          :src="article.firstImage"
+          onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
         />
         <div class="bookmark">
           <v-icon icon="mdi-bookmark-outline" @click=""></v-icon>
@@ -33,17 +50,13 @@ function goBack() {
       <div class="att_description">
         <hr size="5" color="black" width="100%" />
         <div style="padding: 10px"></div>
-        <div class="att_name">삼포해수욕장</div>
+        <div class="att_name">{{ article.title }}</div>
         <div style="padding: 5px"></div>
-        <div class="att_address">강원 고성군 죽왕면 삼포리</div>
+        <div class="att_address">{{ article.addr1 }}</div>
         <div style="padding: 30px"></div>
         <div class="att_box">
           <div class="att_content">
-            1977년 삼포해수욕장으로 개장하였으며 속초에서 북쪽으로 12km 떨어진
-            곳에 있다. 백사장은 길이 800m, 너비 75m, 경사 2~3˚이며, 수심은
-            1~2m이다. 해변을 붉게 수놓는 해당화와 울창한 소나무 숲의 빼어난
-            경관으로 유명한 곳이다. 바다가 깊지 않아 가족 단위 피서지로
-            적합하며, 해변에는 바닷말이 무성하게 자라고 있다.
+            {{ article.description }}
           </div>
         </div>
       </div>
@@ -52,13 +65,15 @@ function goBack() {
 
   <div class="att_location">
     <v-icon icon="mdi-map"></v-icon>위치
-    <div class="map"></div>
+    <div class="map-box">
+      <KakaoMap :latitude="article.latitude" :longitude="article.longitude" />
+    </div>
   </div>
   <div class="att_review">
     <v-icon icon="mdi-lead-pencil"></v-icon>리뷰
     <div class="att_rating">
       <div>
-        <v-rating v-model="rating" hover half-increments></v-rating>
+        <v-rating v-model="rating" hover></v-rating>
       </div>
       <div class="att_textarea">
         <v-textarea label="리뷰를 남겨주세요" variant="outlined"></v-textarea>
@@ -73,7 +88,6 @@ function goBack() {
             <span style="padding-left: 20px"></span>
 
             <v-rating
-              half-increments
               readonly
               :length="5"
               :size="22"
@@ -147,11 +161,27 @@ function goBack() {
   background-color: rgb(238, 237, 237);
   height: 220px;
   border-radius: 10px;
+  overflow-y: scroll;
+}
+.att_box::-webkit-scrollbar {
+  width: 5px; /* 스크롤바의 너비 */
+}
+
+.att_box::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #afcaef; /* 스크롤바의 색상 */
+
+  border-radius: 10px;
+}
+
+.att_box::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, 0.1); /*스크롤바 뒷 배경 색상*/
 }
 .att_content {
   padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  padding-bottom: 20px;
 }
 .att_location {
   margin-top: 80px;
@@ -159,9 +189,9 @@ function goBack() {
   margin-right: 350px;
   font-size: 20px;
 }
-.map {
+.map-box {
   margin-top: 30px;
-  background-color: lightcyan;
+  border: 2px solid black;
   height: 600px;
 }
 .att_review {

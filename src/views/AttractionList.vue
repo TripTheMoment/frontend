@@ -1,9 +1,44 @@
 <script setup>
-import router from "@/router";
-const click = () => {
-  router.push({ name: "attractiondetail" });
+import { useRouter } from "vue-router";
+import { useBoardStore } from "@/store/board";
+import { ref, computed } from "vue";
+
+const boardStore = useBoardStore();
+const articles = computed(() => boardStore.articles);
+const totalPageCount = computed(() => boardStore.totalPageCount);
+const router = useRouter();
+const params = ref({
+  key: "", //조건 검색 시 컬럼명
+  word: "", //해당 컬럼에 일치하는 데이터
+  pgno: 1, //조회할 페이지 번호
+  spp: 20, //한번에 얻어올 게시글 개수
+});
+
+boardStore.getArticles(params.value);
+
+const changePage = async (pageNum) => {
+  // console.log("페이지 변경 , 페이지 번호:", pageNum);
+  params.value.pgno = pageNum;
+  await boardStore.getArticles(params.value);
+  articles.value[0] = {};
 };
 
+const getSearchArticles = (searchKeyword) => {
+  // console.log("BoardList의 조건 검색 메소드 호출:", searchKeyword);
+  params.value.key = searchKeyword.key;
+  params.value.word = searchKeyword.word;
+  params.value.pgno = 1;
+
+  boardStore.getArticles(params.value);
+};
+
+const moveDetail = (id) => {
+  console.log(id);
+  router.push({ name: "attractiondetail", params: { id } });
+};
+const click = () => {
+  console.log(location);
+};
 const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
 </script>
 
@@ -19,13 +54,15 @@ const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
           label="지역"
           :items="['전체', '서울', '강원', '대전', '대구', '부산']"
           variant="outlined"
+          item-value="location"
         ></v-select>
         <div style="padding-left: 10px"></div>
         <v-select
-          class="location_select"
+          class="type_select"
           label="관광지 타입"
           :items="['전체', '맛집', '축제', '산', 'Texas', 'Wyoming']"
           variant="outlined"
+          item-value="type"
         ></v-select>
         <div style="padding-left: 20px"></div>
         <v-text-field
@@ -41,17 +78,18 @@ const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
   <div style="padding: 20px"> </div>
   <div class="card">
     <v-row>
-      <v-col cols="3" v-for="item in 12">
-        <v-card class="mx-auto" max-width="400" @click="click()">
+      <v-col cols="3" v-for="article in articles" :key="article.id">
+        <v-card class="mx-auto" max-width="400" @click="moveDetail(article.id)">
           <v-img
-            src="https://www.expedia.co.kr/stories/wp-content/uploads/2022/07/o-5BoDBNeIkxXi7ylqMHtTZ3Duk.jpeg"
+            :src="article.firstImage"
+            onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
             height="200px"
             cover
           ></v-img>
 
-          <v-card-title> 삼포해수욕장 </v-card-title>
+          <v-card-title> {{ article.title }} </v-card-title>
 
-          <v-card-subtitle>강원 고성군 죽왕면 삼포리 </v-card-subtitle>
+          <v-card-subtitle>{{ article.addr1 }} </v-card-subtitle>
           <div style="padding: 10px"> </div>
         </v-card>
       </v-col>

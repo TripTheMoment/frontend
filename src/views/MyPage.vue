@@ -103,26 +103,13 @@ export default {
       <v-card variant="flat" class="tab_card">
         <v-tabs v-model="tab">
           <div style="padding-left: 20%"></div>
-          <v-tab value="one">내가 쓴 글</v-tab>
-          <v-tab value="two">내 북마크</v-tab>
+          <v-tab value="one">내 북마크</v-tab>
+          <v-tab value="two">내가 쓴 글</v-tab>
         </v-tabs>
 
         <v-card-text class="card_content">
           <v-window v-model="tab">
             <v-window-item value="one">
-              <div class="user_articlelist">
-                <ul>
-                  <li v-for="article in articlelist" v-bind:key="article">
-                    {{ article.subject
-                    }}<span class="mypage_article">{{ article.date }}</span>
-                  </li>
-                </ul>
-              </div>
-              <div style="padding-top: 50px"></div>
-              <v-pagination :length="2"></v-pagination>
-            </v-window-item>
-
-            <v-window-item value="two">
               <v-row style="margin-left: 25%; margin-right: 25%">
                 <v-col cols="4" v-for="item in 6">
                   <div class="boardlist_container">
@@ -140,6 +127,18 @@ export default {
                   <div style="padding-bottom: 10px"></div>
                 </v-col>
               </v-row>
+              <v-pagination :length="2"></v-pagination>
+            </v-window-item>
+            <v-window-item value="two">
+              <div class="user_articlelist">
+                <ul>
+                  <li v-for="article in articlelist" v-bind:key="article">
+                    {{ article.subject
+                    }}<span class="mypage_article">{{ article.date }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div style="padding-top: 50px"></div>
               <v-pagination :length="2"></v-pagination>
             </v-window-item>
           </v-window>

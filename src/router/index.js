@@ -24,7 +24,7 @@ const routes = [
         component: () => import("@/views/SignUp.vue"),
       },
       {
-        path: "/attractionlist",
+        path: "/attractions",
         name: "attractionlist",
         component: () => import("@/views/AttractionList.vue"),
       },
@@ -34,7 +34,7 @@ const routes = [
         component: () => import("@/views/BoardList.vue"),
       },
       {
-        path: "/attractiondetail",
+        path: "/attractions/:id",
         name: "attractiondetail",
         component: () => import("@/views/AttractionDetail.vue"),
       },
