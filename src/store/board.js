@@ -15,7 +15,7 @@ export const useBoardStore = defineStore("board", () => {
     console.log(`http://localhost/attractions?page=${params.pgno}`);
     console.log("getArticles의 응답 데이터 : ", data.data);
     articles.value = data.data.content;
-    totalPageCount.value = data.data.pageable;
+    totalPageCount.value = data.data.totalPages;
   };
   /* ======목록 End================ */
 
