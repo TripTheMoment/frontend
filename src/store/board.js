@@ -5,18 +5,14 @@ import axios from "@/utils/boardAxios";
 export const useBoardStore = defineStore("board", () => {
   /* ======목록 Start============== */
   const articles = ref([]);
-  const condition = {
-    sido: 1,
-    type: 12,
-    title: "공원",
-  };
+
   const totalPageCount = ref(0);
   const getArticles = async (params) => {
-    console.log(condition.value);
     const { data } = await axios.post(
-      "http://localhost/attractions?page=1",
-      condition
+      `http://localhost/attractions?page=${params.pgno}`,
+      params
     );
+    console.log(`http://localhost/attractions?page=${params.pgno}`);
     console.log("getArticles의 응답 데이터 : ", data.data);
     articles.value = data.data.content;
     totalPageCount.value = data.data.pageable;
