@@ -9,8 +9,8 @@ const moveSignUp = () => {
 };
 
 const loginForm = ref({
-  userEmail: "",
-  userPassword: "",
+  email: "",
+  password: "",
 });
 
 const login = async () => {
@@ -30,18 +30,18 @@ const login = async () => {
       <div style="padding: 2px"> </div>
       <p style="font-size: 25px">로그인</p>
       <div style="padding: 5px"> </div>
-      <form @submit.prevent="login">
+      <form @submit.prevent="login" type="post">
         <input
           type="text"
           name="email"
           placeholder="이메일"
-          v-model="loginForm.userEmail"
+          v-model="loginForm.email"
         />
         <input
           type="password"
           name="password"
           placeholder="비밀번호"
-          v-model="loginForm.userPassword"
+          v-model="loginForm.password"
         />
         <button type="submit">로그인</button>
         <p class="message">
