@@ -39,6 +39,11 @@ const moveDetail = (id) => {
 const click = () => {
   console.log(location);
 };
+
+const replaceImg = (e) => {
+  this.target.src =
+    "https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg";
+};
 const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
 </script>
 
@@ -79,13 +84,19 @@ const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
   <div class="card">
     <v-row>
       <v-col cols="3" v-for="article in articles" :key="article.id">
-        <v-card class="mx-auto" max-width="400" @click="moveDetail(article.id)">
-          <v-img
+        <v-card class="mx-auto" max-width="350" @click="moveDetail(article.id)">
+          <img
             :src="article.firstImage"
+            alt=""
+            class="list-img"
             onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
+          />
+          <!-- <v-img
+            :src="article.firstImage"
+            :error="replaceImg"
             height="200px"
             cover
-          ></v-img>
+          ></v-img> -->
 
           <v-card-title> {{ article.title }} </v-card-title>
 
@@ -110,6 +121,8 @@ const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
 }
 .card {
   font-family: "Noto Sans KR", "NanumSquare", sans-serif !important;
+  margin-left: 100px;
+  margin-right: 100px;
 }
 .searchbar {
   margin: 0 auto;
@@ -121,5 +134,10 @@ const tags = ["서울", "강원", "대전", "대구", "부산", "제주"];
 }
 .location_select {
   max-width: 150px;
+}
+.list-img {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
 }
 </style>
