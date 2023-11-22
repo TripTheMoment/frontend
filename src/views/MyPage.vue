@@ -1,9 +1,14 @@
 <script>
 import router from "@/router";
+import { computed } from "vue";
+import { useAuthStore } from "@/store/auth";
+const authStore = useAuthStore();
 export default {
   data: () => ({
     tab: null,
     dialog: false,
+    bookmark_page: 1,
+    article_page: 1,
     articlelist: [
       {
         subject: "내가 쓴 글1",
@@ -22,12 +27,18 @@ export default {
         date: "2023-11-15",
       },
     ],
+    userName: computed(() => authStore.user.userName),
+    followerCnt: computed(() => authStore.user.followerCnt),
+    followingCnt: computed(() => authStore.user.followingCnt),
+    bookmarks: computed(() => authStore.user.bookmarks),
   }),
   methods: {
-    moveFollower: function () {
+    moveFollower: async function () {
+      await authStore.userFollowers();
       router.push({ name: "follower" });
     },
-    moveFollowing: function () {
+    moveFollowing: async function () {
+      await authStore.userFollowings();
       router.push({ name: "following" });
     },
     moveBeforeEdit: function () {
@@ -36,12 +47,13 @@ export default {
     goBack() {
       router.go(-1);
     },
+    moveDetail(id) {
+      console.log(id);
+
+      router.push({ name: "attractiondetail", params: { id } });
+    },
   },
-  // methods: function () {
-  //   return {
-  //     todoItems: ["dfdfd", "dfdfdf", "dfdfdfd"],
-  //   };
-  // },
+
   created: function () {
     // if (localStorage.length > 0) {
     //   for (var i = 0; i < localStorage.length; i++) {
@@ -64,7 +76,7 @@ export default {
       >
       </v-avatar>
       <span style="margin-left: 20px"
-        ><div class="user_name">이름</div>
+        ><div class="user_name">{{ userName }}</div>
 
         <div style="padding-top: 20px"></div>
         <div class="user_num" style="margin-left: 10px">
@@ -73,7 +85,7 @@ export default {
               style="padding-left: 13px; cursor: pointer"
               @click="moveFollower"
             >
-              12
+              {{ followerCnt }}
             </div>
             팔로워</span
           >
@@ -83,7 +95,7 @@ export default {
               style="padding-left: 13px; cursor: pointer"
               @click="moveFollowing"
             >
-              12
+              {{ followingCnt }}
             </div>
             팔로잉</span
           >
@@ -111,23 +123,26 @@ export default {
           <v-window v-model="tab">
             <v-window-item value="one">
               <v-row style="margin-left: 25%; margin-right: 25%">
-                <v-col cols="4" v-for="item in 6">
+                <v-col cols="4" v-for="item in bookmarks">
                   <div class="boardlist_container">
-                    <div class="user_dcard" @click="movedetail">
-                      <div
-                        class="user_paracard"
-                        style="
-                          background-image: url(https://res.klook.com/image/upload/fl_lossy.progressive,w_800,c_fill,q_85/Mobile/City/g9ynzkjz1nsrvhrjml4j.jpg);
-                        "
-                      ></div>
+                    <div class="user_dcard" @click="moveDetail(item.info.id)">
+                      <img
+                        :src="item.info.firstImage"
+                        class="user_dcard"
+                        onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
+                      />
                     </div>
                   </div>
                   <div style="padding-top: 10px"></div>
-                  <h3>광안대교</h3>
-                  <div style="padding-bottom: 10px"></div>
+                  <h3>{{ item.info.title }}</h3>
+                  <div style="padding-bottom: 30px"></div>
                 </v-col>
               </v-row>
-              <v-pagination :length="2"></v-pagination>
+              <v-pagination
+                v-model="bookmark_page"
+                :length="3"
+                :total-visible="5"
+              ></v-pagination>
             </v-window-item>
             <v-window-item value="two">
               <div class="user_articlelist">
@@ -138,7 +153,7 @@ export default {
                   </li>
                 </ul>
               </div>
-              <div style="padding-top: 50px"></div>
+              <div style="padding-top: 100px"></div>
               <v-pagination :length="2"></v-pagination>
             </v-window-item>
           </v-window>
@@ -180,7 +195,7 @@ export default {
 }
 
 .card_content {
-  height: 60vh;
+  height: 65vh;
   background-color: rgb(231, 239, 246);
 }
 .user_articlelist {
@@ -227,6 +242,7 @@ li {
   display: block;
   perspective: 500px;
   border-radius: 12px;
+  width: 100%;
 }
 .col-md-12,
 .col-md-4 {

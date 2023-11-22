@@ -3,15 +3,15 @@ import { useAuthStore } from "../store/auth";
 import router from "../router";
 
 //비동기 요청 전 인터셉트
-axios.interceptors.request.use(
-  (config) => {
-    const authStore = useAuthStore();
-    config.headers.Authorization = `Bearer ${authStore.token}`;
-    // console.log("요청 intercept", config);
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// axios.interceptors.request.use(
+//   (config) => {
+//     const authStore = useAuthStore();
+//     config.headers.Authorization = `Bearer ${authStore.token}`;
+//     // console.log("요청 intercept", config);
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 
 //비동기 요청 응답 수신 시, 인터셉트
 axios.interceptors.response.use(

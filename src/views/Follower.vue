@@ -1,11 +1,23 @@
-<script setup>
+<script>
 import router from "@/router";
-function goBack() {
-  router.go(-1);
-}
-function moveUserPage() {
-  router.push({ name: "userpage" });
-}
+import { useAuthStore } from "@/store/auth";
+import { computed } from "vue";
+const authStore = useAuthStore();
+
+export default {
+  data: () => ({
+    followers: computed(() => authStore.follows.followers),
+  }),
+  methods: {
+    goBack() {
+      router.go(-1);
+    },
+    moveUserPage(memberId) {
+      authStore.getUserInfo(memberId);
+      router.push({ name: "userpage" });
+    },
+  },
+};
 </script>
 
 <template>
@@ -23,21 +35,21 @@ function moveUserPage() {
     <div class="follower-title">팔로워</div>
     <div class="follower-box" style="height: 80%">
       <v-row style="padding-left: 10%">
-        <v-col cols="3" v-for="item in 12">
+        <v-col cols="3" v-for="item in followers">
           <div style="width: 100px; height: 100px">
             <v-avatar
               image="https://scontent-ssn1-1.xx.fbcdn.net/v/t1.6435-9/38770636_1833872913393032_3119054745558319104_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=7a1959&_nc_ohc=qnQTYJczRKAAX8jYY-H&_nc_ht=scontent-ssn1-1.xx&oh=00_AfBUgRTqJb9jpjfNPztB5vGI0UAiGU5ueELfuw-FO2p81A&oe=657E96EE"
               size="80"
-              @click="moveUserPage"
+              @click="moveUserPage(item.member.id)"
               style="cursor: pointer"
             ></v-avatar>
 
-            <div style="padding-left: 25px">이름</div>
+            <div style="padding-left: 25px">{{ item.member.name }}</div>
           </div>
         </v-col>
       </v-row>
     </div>
-    <v-pagination :length="2"></v-pagination>
+    <!-- <v-pagination :length="2"></v-pagination> -->
   </div>
 </template>
 

@@ -32,7 +32,7 @@ export default {
   </v-row>
 
   <div style="padding: 3px"> </div>
-  <v-row>
+  <v-row style="margin-left: 8%; margin-right: 8%">
     <v-col cols="3" v-for="item in 12">
       <div class="boardlist_container">
         <div class="dcard" @click="movedetail">
@@ -66,7 +66,7 @@ export default {
 
 <style lang="scss">
 .write {
-  margin-left: 50px;
+  margin-left: 10%;
 }
 .titlesearch {
   margin-right: 40px;

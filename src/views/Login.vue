@@ -9,8 +9,8 @@ const moveSignUp = () => {
 };
 
 const loginForm = ref({
-  userEmail: "",
-  userPassword: "",
+  email: "",
+  password: "",
 });
 
 const login = async () => {
@@ -30,18 +30,18 @@ const login = async () => {
       <div style="padding: 2px"> </div>
       <p style="font-size: 25px">로그인</p>
       <div style="padding: 5px"> </div>
-      <form @submit.prevent="login">
+      <form @submit.prevent="login" type="post">
         <input
           type="text"
           name="email"
           placeholder="이메일"
-          v-model="loginForm.userEmail"
+          v-model="loginForm.email"
         />
         <input
           type="password"
           name="password"
           placeholder="비밀번호"
-          v-model="loginForm.userPassword"
+          v-model="loginForm.password"
         />
         <button type="submit">로그인</button>
         <p class="message">
@@ -88,7 +88,7 @@ body {
 .form input {
   outline: 0;
   border-radius: 10px;
-  background: #f2f2f2;
+  background: rgb(188, 216, 188);
   width: 100%;
   border: 0;
   margin: 0 0 15px;
@@ -97,18 +97,18 @@ body {
   font-size: 14px;
 }
 .form input:hover {
-  background-color: #d3f8f9;
+  background-color: rgb(188, 216, 188);
   transition: all 1s ease 0s;
 }
 .form input:focus {
-  background-color: #d3f8f9;
+  background-color: rgb(188, 216, 188);
   transition: all 1s ease 0s;
 }
 .form button {
   text-transform: uppercase;
   outline: 0;
   border-radius: 10px;
-  background: #1adbe5;
+  background: rgb(46, 109, 46);
   width: 100%;
   border: 0;
   padding: 15px;
@@ -119,7 +119,7 @@ body {
 .form button:hover,
 .form button:active,
 .form button:focus {
-  background-color: #06c5cf;
+  background-color: rgb(11, 97, 11);
   transition: all 1s ease 0s;
 }
 .form .message {
@@ -128,7 +128,7 @@ body {
   font-size: 12px;
 }
 .form .message a {
-  color: #06c5cf;
+  color: rgb(122, 187, 122);
   text-decoration: none;
 }
 </style>
