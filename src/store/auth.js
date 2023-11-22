@@ -15,6 +15,19 @@ export const useAuthStore = defineStore(
       followingCnt: "",
       profileImg: "",
     });
+    const otherUser = ref({
+      userName: "",
+      bookmarks: [],
+      articles: [],
+      followerCnt: "",
+      followingCnt: "",
+      profileImg: "",
+    });
+    const follows = ref({
+      followers: "",
+      followings: "",
+    });
+
     const accessToken = ref(""); //jwt 토큰 정보W
     const refreshToken = ref(""); //jwt 토큰 정보W
 
@@ -23,6 +36,12 @@ export const useAuthStore = defineStore(
         "http://localhost/auth/login",
         loginForm
       );
+
+      // const { headers } = await axios.post(
+      //   "http://localhost/auth/login",
+      //   loginForm
+      // );
+
       console.log("로그인 요청 후 응답 데이터:", headers);
 
       accessToken.value = headers.authorization;
@@ -51,6 +70,19 @@ export const useAuthStore = defineStore(
       accessToken.value = "";
       refreshToken.value = "";
     };
+    const getMyrBookmarks = async (memberId) => {
+      const { data } = await axios.get(
+        `http://localhost/members/${memberId}/bookmarks`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+            RefreshToken: refreshToken.value,
+          },
+        }
+      );
+
+      user.value.bookmarks = data.data.content;
+    };
     const userDetail = async () => {
       const { data } = await axios.get("http://localhost/members/detail", {
         headers: {
@@ -66,12 +98,80 @@ export const useAuthStore = defineStore(
       user.value.followingCnt = data.data.followingCnt;
       user.value.profileImg = data.data.profileImgUrl;
       console.log("유저 상제 정보 조회 : ", user);
+      getMyrBookmarks(data.data.id);
+    };
+
+    const userFollowers = async () => {
+      const { data } = await axios.get(
+        "http://localhost/members/follows/followers",
+        {
+          headers: {
+            Authorization: accessToken.value,
+            RefreshToken: refreshToken.value,
+          },
+        }
+      );
+
+      follows.value.followers = data.data;
+      console.log("유저 팔로워 조회 : ", follows.value.followers);
+    };
+
+    const userFollowings = async () => {
+      const { data } = await axios.get(
+        "http://localhost/members/follows/followings",
+        {
+          headers: {
+            Authorization: accessToken.value,
+            RefreshToken: refreshToken.value,
+          },
+        }
+      );
+      console.log("유저 팔로잉 조회 : ", data.data);
+      follows.value.followings = data.data;
+    };
+
+    const getUserBookmarks = async (memberId) => {
+      const { data } = await axios.get(
+        `http://localhost/members/${memberId}/bookmarks`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+            RefreshToken: refreshToken.value,
+          },
+        }
+      );
+      console.log("다른 사용자 조회 : ", data.data);
+
+      otherUser.value.bookmarks = data.data.content;
+    };
+
+    const getUserInfo = async (memberId) => {
+      const { data } = await axios.get(`http://localhost/members/${memberId}`, {
+        headers: {
+          Authorization: accessToken.value,
+          RefreshToken: refreshToken.value,
+        },
+      });
+      console.log("다른 사용자 조회 : ", data.data);
+      otherUser.value.userName = data.data.name;
+      otherUser.value.bookmarks = data.data.bookmarks;
+      otherUser.value.followerCnt = data.data.followerCnt;
+      otherUser.value.followingCnt = data.data.followingCnt;
+      otherUser.value.profileImg = data.data.profileImgUrl;
+      getUserBookmarks(memberId);
     };
     return {
       user,
+      follows,
       userDetail,
+      userFollowers,
+      userFollowings,
       accessToken,
       refreshToken,
+      getUserBookmarks,
+      getMyrBookmarks,
+      getUserInfo,
+      otherUser,
       login,
       logout,
       clearUser,
