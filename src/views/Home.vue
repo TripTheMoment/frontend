@@ -4,29 +4,36 @@
       <div class="inputBox">
         <div class="input-start">
           반갑습니다!<br />
-          <strong>목적지를 설정해볼까요?</strong>
+          <strong>여행을 떠나보세요!</strong>
         </div>
-        <v-text-field
-          class="text-field rounded-pill"
-          label="어디로 갈까요?"
-          variant="outlined"
-          bg-color="white"
-        ></v-text-field>
-        <v-select
-          class="select"
-          label="지역"
-          :items="['전체', '서울', '강원', '대전', '대구', '부산', '제주']"
-          variant="outlined"
-          bg-color="white"
-        ></v-select>
-        <v-select
-          class="select"
-          label="관광지 타입"
-          :items="['전체', '맛집', '축제', '산', '유적지', '부산', '제주']"
-          variant="outlined"
-          bg-color="white"
-        ></v-select>
-        <button class="search">검색</button>
+        <!-- <v-text-field
+            class="text-field rounded-pill"
+            label="어디로 갈까요?"
+            variant="outlined"
+            bg-color="white"
+            v-model="input_title"
+          ></v-text-field>
+          <v-select
+            class="select"
+            label="지역"
+            :items="location_tag"
+            item-title="name"
+            item-value="value"
+            variant="outlined"
+            bg-color="white"
+            v-model="location_select"
+          ></v-select>
+          <v-select
+            class="select"
+            label="관광지 타입"
+            :items="type_tag"
+            item-title="name"
+            item-value="value"
+            variant="outlined"
+            bg-color="white"
+            v-model="type_select"
+          ></v-select>
+          <button class="search" @click.prevent="search">검색</button> -->
       </div>
     </div>
 
@@ -173,7 +180,8 @@
 <script setup>
 import { ref } from "vue";
 import router from "@/router";
-
+import { useBoardStore } from "@/store/board";
+const boardStore = useBoardStore();
 const index = ref(0);
 const items = [
   {
@@ -189,6 +197,57 @@ const items = [
     src: "./src/assets/img/main4.jpg",
   },
 ];
+const location_tag = [
+  { name: "전국", value: 0 },
+  { name: "서울", value: 1 },
+  { name: "인천", value: 2 },
+  { name: "대전", value: 3 },
+  { name: "대구", value: 4 },
+  { name: "광주", value: 5 },
+  { name: "부산", value: 6 },
+  { name: "울산", value: 7 },
+  { name: "세종", value: 8 },
+  { name: "경기도", value: 31 },
+  { name: "강원도", value: 32 },
+  { name: "충청북도", value: 33 },
+  { name: "충청남도", value: 34 },
+  { name: "경상북도", value: 35 },
+  { name: "경상남도", value: 36 },
+  { name: "전라북도", value: 37 },
+  { name: "전라남도", value: 38 },
+  { name: "제주도", value: 39 },
+];
+const type_tag = [
+  { name: "관광지", value: 12 },
+  { name: "문화시설", value: 14 },
+  { name: "행사/공연/축제", value: 15 },
+  { name: "여행코스", value: 25 },
+  { name: "레포츠", value: 28 },
+  { name: "숙박", value: 32 },
+  { name: "쇼핑", value: 38 },
+  { name: "음식점", value: 39 },
+];
+
+const location_select = ref();
+const type_select = ref();
+const input_title = ref("");
+
+const params = ref({
+  sido: location_select,
+  type: type_select,
+  title: input_title,
+});
+
+const search = () => {
+  console.log(location_select.value);
+  console.log(type_select.value);
+  console.log(input_title.value);
+  console.log(params.value);
+  router.push({
+    name: "attractionlist",
+    params: { sido: location_select, type: type_select, title: input_title },
+  });
+};
 
 const colors = ["#EDEEF0", "#97c1a9", "#CCE2CB", "#FFC5BF"];
 function changeColorLeft() {
@@ -235,8 +294,9 @@ const theme = {
 .input-start {
   border-bottom: black solid 0.7px;
   margin: 0 0 20px 0;
-  font-size: large;
+  font-size: 30px;
   padding-bottom: 8px;
+  padding-top: 60px;
 }
 .text-field {
   width: 300px;
@@ -260,7 +320,7 @@ const theme = {
 .carousel {
   float: right;
   margin-top: 90px;
-  margin-right: 15%;
+  margin-right: 20%;
   width: 700px;
   box-shadow: 7.272px 10px 30px 0px rgba(0, 0, 0, 0.15);
 }

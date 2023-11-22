@@ -74,7 +74,7 @@ body {
 .form input {
   outline: 0;
   border-radius: 10px;
-  background: #f2f2f2;
+  background: rgb(188, 216, 188);
   width: 100%;
   border: 0;
   margin: 0 0 15px;
@@ -83,18 +83,18 @@ body {
   font-size: 14px;
 }
 .form input:hover {
-  background-color: #d3f8f9;
+  background-color: rgb(188, 216, 188);
   transition: all 1s ease 0s;
 }
 .form input:focus {
-  background-color: #d3f8f9;
+  background-color: rgb(188, 216, 188);
   transition: all 1s ease 0s;
 }
 .form button {
   text-transform: uppercase;
   outline: 0;
   border-radius: 10px;
-  background: #1adbe5;
+  background: rgb(46, 109, 46);
   width: 100%;
   border: 0;
   padding: 15px;
@@ -105,17 +105,8 @@ body {
 .form button:hover,
 .form button:active,
 .form button:focus {
-  background-color: #06c5cf;
+  background-color: rgb(46, 109, 46);
   transition: all 1s ease 0s;
-}
-.form .message {
-  margin: 15px 0 0;
-  color: #b3b3b3;
-  font-size: 12px;
-}
-.form .message a {
-  color: #06c5cf;
-  text-decoration: none;
 }
 
 /*이메일 형식 체크 시작*/
