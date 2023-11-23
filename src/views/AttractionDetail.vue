@@ -5,22 +5,44 @@ import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import { useBoardStore } from "@/store/board";
 import KakaoMap from "@/components/KakaoMap.vue";
+import { useAuthStore } from "@/store/auth";
 
+const authStore = useAuthStore();
 const boardStore = useBoardStore();
 const article = computed(() => boardStore.article); //store 데이터를 반응형으로 가져오기
 const router = useRouter();
 const route = useRoute();
-
+console.log(route.params.id);
 boardStore.getArticle(route.params.id);
 
 const url = article.value;
 console.log(url);
 //boardStore.getArticle(route.params.articleNo);
 
+const reviewForm = ref({
+  score: "",
+  content: "",
+});
+
 const rating = ref(3.5);
 function goBack() {
   router.go(-1);
 }
+
+const registReview = async () => {
+  try {
+    if (!confirm("등록하시겠습니까?")) return;
+
+    await authStore.registReview(reviewForm.value, article.value.id);
+
+    alert("등록 성공");
+    boardStore.getArticle(route.params.id);
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
+};
 </script>
 
 <template>
@@ -72,15 +94,22 @@ function goBack() {
   <div class="att_review">
     <v-icon icon="mdi-lead-pencil"></v-icon>리뷰
     <div class="att_rating">
-      <div>
-        <v-rating v-model="rating" hover></v-rating>
-      </div>
-      <div class="att_textarea">
-        <v-textarea label="리뷰를 남겨주세요" variant="outlined"></v-textarea>
-        <v-btn class="att_btn"> 등록 </v-btn>
-      </div>
+      <form @submit.prevent="registReview">
+        <div>
+          <v-rating v-model="reviewForm.score" hover></v-rating>
+        </div>
+        <div class="att_textarea">
+          <v-textarea
+            label="리뷰를 남겨주세요"
+            variant="outlined"
+            v-model="reviewForm.content"
+          ></v-textarea>
+          <v-btn class="att_btn" type="submit"> 등록 </v-btn>
+        </div>
+      </form>
+
       <div class="att_commentbox">
-        <v-col v-for="item in 12">
+        <v-col v-for="item in article.reviewResList">
           <div class="att_comment">
             <v-avatar color="surface-variant"></v-avatar>
             <span style="padding-left: 10px"></span>
@@ -91,12 +120,12 @@ function goBack() {
               readonly
               :length="5"
               :size="22"
-              :model-value="2.5"
+              :model-value="item.score"
               color="yellow-darken-3"
               rounded
             />
             <div style="padding-top: 20px"></div>
-            <div>경치도 좋고 분위기도 좋아요.</div>
+            <div>{{ item.content }}</div>
             <div style="padding-top: 50px"></div>
             <hr size="1" color="lightgray" width="100%" />
           </div>
