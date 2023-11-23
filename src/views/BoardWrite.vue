@@ -1,36 +1,34 @@
-<script>
+<script setup>
 import router from "@/router";
-import RoroDialog from "/src/components/RoroDialog";
+import { ref } from "vue";
+import { useAuthStore } from "@/store/auth";
+const authStore = useAuthStore();
 
-export default {
-  name: "app",
+const writeForm = ref({
+  title: "",
+  content: "",
+});
+const file = ref();
+const titleRules = [
+  (v) => !!v || "제목을 입력해주세요",
+  (v) => (v && v.length <= 10) || "제목은 10글자를 넘길 수 없습니다",
+];
+const contentRules = [(v) => !!v || "내용을 입력해주세요"];
 
-  data: () => ({
-    title: "",
-    titlerules: [
-      (value) => {
-        if (value) return true;
-
-        return "제목을 입력해주세요";
-      },
-    ],
-    content: "",
-    contentrules: [
-      (value) => {
-        if (value) return true;
-
-        return "내용을 입력해주세요";
-      },
-    ],
-  }),
-  methods: {
-    moveBoardList: function () {
-      router.push({ name: "boardlist" });
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
-  },
+function goBack() {
+  this.$router.go(-1);
+}
+const registArticle = async () => {
+  try {
+    if (!confirm("이대로 등록하시겠습니까?")) return;
+    await authStore.writeArticle(writeForm.value, file.value);
+    router.push({ name: "boardlist" });
+    alert("등록 성공");
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
 };
 </script>
 
@@ -48,19 +46,19 @@ export default {
     </div>
     <hr size="1" color="lightgray" width="100%" />
     <div class="write_form">
-      <v-form>
+      <v-form @submit.prevent="registArticle" enctype="multipart/form-data">
         <v-text-field
           label="제목"
-          v-model="title"
-          :rules="titlerules"
+          v-model="writeForm.title"
+          :rules="titleRules"
           variant="outlined"
         ></v-text-field>
         <div style="padding-top: 20px"></div>
         <v-textarea
           label="내용"
           variant="outlined"
-          v-model="content"
-          :rules="contentrules"
+          v-model="writeForm.content"
+          :rules="contentRules"
           rows="10"
         ></v-textarea>
         <div style="padding-top: 20px"></div>
@@ -68,9 +66,10 @@ export default {
           label="사진 넣기"
           variant="filled"
           prepend-icon="mdi-camera"
+          v-model="file"
         ></v-file-input>
         <div style="padding-top: 20px"></div>
-        <v-btn class="me-4" type="submit" color="blue" @click=""> 저장 </v-btn>
+        <v-btn class="me-4" color="blue" type="submit"> 저장 </v-btn>
 
         <v-btn @click="moveBoardList"> 취소 </v-btn>
       </v-form>

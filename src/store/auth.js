@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import router from "@/router";
 
 export const useAuthStore = defineStore(
   "auth",
@@ -59,6 +60,26 @@ export const useAuthStore = defineStore(
     const logout = () => {
       clearUser();
     };
+    const checkPassword = async (password) => {
+      const form = { password: password };
+      console.log(form);
+
+      const { data } = await axios.post(
+        `http://localhost/members/password`,
+        form,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+      console.log(data.success);
+      if (data.success) {
+        router.push({ name: "myinfoedit" });
+      } else {
+        alert("비밀번호가 틀렸습니다!");
+      }
+    };
 
     const clearUser = () => {
       user.value.userEmail = "";
@@ -69,6 +90,29 @@ export const useAuthStore = defineStore(
       user.value.profileImg = "";
       accessToken.value = "";
       refreshToken.value = "";
+    };
+
+    const signUp = async (signUpForm) => {
+      console.log("signUp() 요청, 등록데이터 : ", signUpForm);
+      const form = {
+        email: signUpForm.email,
+        password: signUpForm.password,
+        name: signUpForm.name,
+      };
+      await axios.post("http://localhost/members/", form);
+    };
+
+    const editInfo = async (name, password) => {
+      const form = {
+        name: name,
+        password: password,
+      };
+      console.log(form);
+      await axios.patch("http://localhost/members/detail", form, {
+        headers: {
+          Authorization: accessToken.value,
+        },
+      });
     };
     const getMyrBookmarks = async (memberId) => {
       const { data } = await axios.get(
@@ -98,7 +142,7 @@ export const useAuthStore = defineStore(
       user.value.followingCnt = data.data.followingCnt;
       user.value.profileImg = data.data.profileImgUrl;
       console.log("유저 상제 정보 조회 : ", user);
-      getMyrBookmarks(data.data.id);
+      // getMyrBookmarks(data.data.id);
     };
 
     const userFollowers = async () => {
@@ -160,6 +204,54 @@ export const useAuthStore = defineStore(
       otherUser.value.profileImg = data.data.profileImgUrl;
       getUserBookmarks(memberId);
     };
+
+    const writeArticle = async (writeForm, file) => {
+      console.log("registArticle() 요청, 등록데이터 : ", writeForm, file);
+      var form = new FormData();
+
+      // form.append("file", file);
+      Array.from(file).forEach((el) => {
+        form.append("file", el);
+      });
+      form.append(
+        "form",
+        new Blob([JSON.stringify(writeForm)], { type: "application/json" })
+      );
+      console.log("registArticle() 요청, 등록데이터 : ", writeForm);
+      console.log("registArticle() 요청, 등록데이터 : ", file);
+      await axios.post("http://localhost/articles", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: accessToken.value,
+        },
+      });
+    };
+
+    const registReview = async (writeForm, articleNo) => {
+      console.log("registReview() 요청, 등록데이터 : ", writeForm, articleNo);
+      const form = { score: writeForm.score, content: writeForm.content };
+      console.log("form : ", form);
+      await axios.post(
+        `http://localhost/attractions/${articleNo}/reviews`,
+        form,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+    };
+
+    const registComment = async (writeForm, articleNo) => {
+      console.log("registComment() 요청, 등록데이터 : ", writeForm, articleNo);
+      const form = { content: writeForm.content };
+      console.log("form : ", form);
+      await axios.post(`http://localhost/articles/${articleNo}/replies`, form, {
+        headers: {
+          Authorization: accessToken.value,
+        },
+      });
+    };
     return {
       user,
       follows,
@@ -174,7 +266,13 @@ export const useAuthStore = defineStore(
       otherUser,
       login,
       logout,
+      signUp,
       clearUser,
+      writeArticle,
+      registReview,
+      registComment,
+      checkPassword,
+      editInfo,
     };
   },
 

@@ -1,34 +1,25 @@
-<script>
+<script setup>
 import router from "@/router";
-export default {
-  data: () => ({
-    tab: null,
-    dialog: false,
-    articlelist: [
-      {
-        subject: "내가 쓴 글1",
-        date: "2023-11-17",
-      },
-      {
-        subject: "내가 쓴 글2",
-        date: "2023-11-16",
-      },
-      {
-        subject: "내가 쓴 글3",
-        date: "2023-11-15",
-      },
-      {
-        subject: "내가 쓴 글4",
-        date: "2023-11-15",
-      },
-    ],
-  }),
-  methods: {
-    goBack() {
-      router.go(-1);
-    },
-  },
-};
+import { ref, computed } from "vue";
+import { useAuthStore } from "@/store/auth";
+const authStore = useAuthStore();
+const tab = ref(null);
+const dialog = ref(false);
+
+function goBack() {
+  router.go(-1);
+}
+function moveDetail(id) {
+  console.log(id);
+
+  router.push({ name: "attractiondetail", params: { id } });
+}
+
+const otherUser = computed(() => authStore.otherUser);
+const userName = computed(() => authStore.otherUser.userName);
+const followerCnt = computed(() => authStore.otherUser.followerCnt);
+const followingCnt = computed(() => authStore.otherUser.followingCnt);
+const bookmarks = computed(() => authStore.otherUser.bookmarks);
 </script>
 
 <template>
@@ -41,17 +32,17 @@ export default {
       >
       </v-avatar>
       <span style="margin-left: 20px"
-        ><div class="user_name">이름</div>
+        ><div class="user_name">{{ userName }}</div>
 
         <div style="padding-top: 20px"></div>
         <div class="user_num" style="margin-left: 10px">
           <span
-            ><div style="padding-left: 13px">12</div>
+            ><div style="padding-left: 13px">{{ followerCnt }}</div>
             팔로워</span
           >
           <span style="padding-left: 20px"></span>
           <span @click=""
-            ><div style="padding-left: 13px">12</div>
+            ><div style="padding-left: 13px">{{ followingCnt }}</div>
             팔로잉</span
           >
         </div>
@@ -138,19 +129,18 @@ export default {
           <v-window v-model="tab">
             <v-window-item value="one">
               <v-row style="margin-left: 25%; margin-right: 25%">
-                <v-col cols="4" v-for="item in 6">
+                <v-col cols="4" v-for="item in bookmarks">
                   <div class="boardlist_container">
-                    <div class="user_dcard" @click="movedetail">
-                      <div
-                        class="user_paracard"
-                        style="
-                          background-image: url(https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F99A114335A021DBE30);
-                        "
-                      ></div>
+                    <div class="user_dcard" @click="moveDetail(item.info.id)">
+                      <img
+                        :src="item.info.firstImage"
+                        class="user_dcard"
+                        onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
+                      />
                     </div>
                   </div>
                   <div style="padding-top: 10px"></div>
-                  <h3>순천만 습지</h3>
+                  <h3>{{ item.info.title }}</h3>
                   <div style="padding-bottom: 10px"></div>
                 </v-col>
               </v-row>
@@ -242,6 +232,7 @@ li {
   display: block;
   perspective: 500px;
   border-radius: 12px;
+  width: 100%;
 }
 .col-md-12,
 .col-md-4 {

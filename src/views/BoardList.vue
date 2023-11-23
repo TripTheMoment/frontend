@@ -1,21 +1,47 @@
-<script>
-import router from "@/router";
-export default {
-  methods: {
-    movewrite: function () {
-      router.push({ name: "boardwrite" });
-    },
-    movedetail: function () {
-      router.push({ name: "boarddetail" });
-    },
-  },
+<script setup>
+import { useRouter, useRoute } from "vue-router";
+import { useArticleStore } from "@/store/article";
+import { ref, computed, watch } from "vue";
+
+const router = useRouter();
+
+const articleStore = useArticleStore();
+const articles = computed(() => articleStore.articles);
+const totalPageCount = computed(() => articleStore.totalPageCount);
+const input_title = ref("");
+const page = ref(0);
+
+watch(page, () => {
+  console.log("페이지 변경");
+  boardStore.getArticles(params.value);
+});
+
+const params = ref({
+  title: input_title,
+  pgno: page,
+});
+
+const search = () => {
+  boardStore.getArticles(params.value);
 };
+
+const movewrite = () => {
+  router.push({ name: "boardwrite" });
+};
+
+const moveDetail = async (articleNo) => {
+  console.log(articleNo);
+  await articleStore.getArticle(articleNo);
+  router.push({ name: "boarddetail", params: { articleNo } });
+};
+
+articleStore.getArticles(params.value);
 </script>
 
 <template>
-  <div style="padding: 5px"> </div>
+  <div style="padding: 5px"></div>
   <div class="boardtitle">여행 게시판</div>
-  <div style="padding: 3px"> </div>
+  <div style="padding: 3px"></div>
   <v-row justify="end">
     <v-col>
       <v-btn class="write" size="large" @click="movewrite">글쓰기</v-btn>
@@ -25,7 +51,7 @@ export default {
         class="titlesearch"
         label="제목으로 검색"
         append-inner-icon="mdi-magnify"
-        @click:append-inner="movedetail"
+        @click:append-inner="moveDetail"
         variant="outlined"
       ></v-text-field>
     </v-col>
@@ -33,9 +59,9 @@ export default {
 
   <div style="padding: 3px"> </div>
   <v-row style="margin-left: 8%; margin-right: 8%">
-    <v-col cols="3" v-for="item in 12">
+    <v-col cols="3" v-for="item in articles">
       <div class="boardlist_container">
-        <div class="dcard" @click="movedetail">
+        <div class="dcard" @click="moveDetail(item.id)">
           <div class="trigger"></div>
           <div class="trigger"></div>
           <div class="trigger"></div>
@@ -48,12 +74,10 @@ export default {
 
           <div
             class="paracard"
-            style="
-              background-image: url(https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F264CC83C5858832B31);
-            "
+            :style="{ backgroundImage: `url(${item.imgUrl})` }"
           >
             <div class="frame">
-              <h2 class="article-subject">안반데기 마을</h2>
+              <h2 class="article-subject">{{ item.title }}</h2>
             </div>
           </div>
         </div>

@@ -1,7 +1,10 @@
 <template>
   <v-app-bar :elevation="1">
     <v-app-bar-title style="cursor: pointer" @click="moveHome()">
-      <v-icon icon="mdi-circle-slice-6" />
+      <img
+        src="/src/assets/sparkle.png"
+        style="width: 30px; padding-right: 5px"
+      />
       Trip, the Moment
     </v-app-bar-title>
     <v-btn variant="text" @click="moveAttractionList()">관광지 목록</v-btn>
@@ -20,12 +23,19 @@
 
 <script setup>
 import router from "@/router";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useAuthStore } from "@/store/auth";
+import { useArticleStore } from "@/store/article";
 
 const authStore = useAuthStore();
+const articleStore = useArticleStore();
 const isLogin = computed(() => !!authStore.refreshToken);
 const userName = computed(() => authStore.user.userName);
+const params = ref({
+  title: "",
+  pgno: 0,
+});
+
 const moveHome = () => {
   router.push({ name: "Home" });
 };
@@ -38,6 +48,7 @@ const moveAttractionList = () => {
   router.push({ name: "attractionlist" });
 };
 const moveBoardList = () => {
+  articleStore.getArticles(params.value);
   router.push({ name: "boardlist" });
 };
 const moveMyPage = () => {
