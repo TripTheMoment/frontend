@@ -1,10 +1,14 @@
 <script setup>
 import router from "@/router";
 import { ref } from "vue";
+import { useAuthStore } from "@/store/auth";
+
+const authStore = useAuthStore();
 const userName = ref("정연우");
+const password = ref("");
 
 function moveEditPage() {
-  router.push({ name: "myinfoedit" });
+  authStore.checkPassword(password.value);
 }
 </script>
 
@@ -15,16 +19,15 @@ function moveEditPage() {
   </div>
   <div class="edit-container">
     <v-sheet width="300" class="mx-auto">
-      <v-form fast-fail @submit.prevent>
+      <v-form @submit.prevent="moveEditPage">
         <v-text-field
           @click:append-inner="click"
           variant="outlined"
           type="password"
+          v-model="password"
         ></v-text-field>
 
-        <v-btn type="submit" block class="mt-2" @click="moveEditPage"
-          >확인</v-btn
-        >
+        <v-btn type="submit" block class="mt-2">확인</v-btn>
       </v-form>
     </v-sheet>
   </div>
