@@ -260,6 +260,7 @@ li {
   perspective: 500px;
   border-radius: 12px;
   width: 100%;
+  height: 200px;
 }
 .col-md-12,
 .col-md-4 {

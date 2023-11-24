@@ -42,22 +42,14 @@ articleStore.getArticles(params.value);
 </script>
 
 <template>
-  <div style="padding: 5px"></div>
+  <div style="padding: 20px"></div>
   <div class="boardtitle">여행 게시판</div>
-  <div style="padding: 3px"></div>
+  <div style="padding: 20px"></div>
   <v-row justify="end">
     <v-col>
       <v-btn class="write" size="large" @click="movewrite">글쓰기</v-btn>
     </v-col>
-    <v-col cols="auto">
-      <v-text-field
-        class="titlesearch"
-        label="제목으로 검색"
-        append-inner-icon="mdi-magnify"
-        @click:append-inner="moveDetail"
-        variant="outlined"
-      ></v-text-field>
-    </v-col>
+    <v-col cols="auto"> </v-col>
   </v-row>
 
   <div style="padding: 3px"> </div>
