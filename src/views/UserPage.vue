@@ -1,10 +1,11 @@
 <script setup>
 import router from "@/router";
-import { ref, computed } from "vue";
+import { ref, computed ,watch} from "vue";
 import { useAuthStore } from "@/store/auth";
 const authStore = useAuthStore();
 const tab = ref(null);
 const dialog = ref(false);
+const page=ref(1);
 
 function goBack() {
   router.go(-1);
@@ -15,18 +16,40 @@ function moveDetail(id) {
   router.push({ name: "attractiondetail", params: { id } });
 }
 
+
 const otherUser = computed(() => authStore.otherUser);
 const userName = computed(() => authStore.otherUser.userName);
 const followerCnt = computed(() => authStore.otherUser.followerCnt);
 const followingCnt = computed(() => authStore.otherUser.followingCnt);
 const bookmarks = computed(() => authStore.otherUser.bookmarks);
+const userId = computed(() => authStore.otherUser.userId);
+const followYn = computed(() => authStore.otherUser.followYn);
+const profileImg = computed(() => authStore.otherUser.profileImg);
+const totalPageCount = computed(() => authStore.otherbookmarkTotalPageCount);
+
+function followUser(){
+  authStore.followUser(userId.value);
+  authStore.getUserInfo(userId.value);
+  dialog.value=false;
+}
+function cancelFollow(){
+  authStore.cancelFollow(userId.value);
+  authStore.getUserInfo(userId.value);
+  dialog.value=false;
+}
+watch(page, () => {
+  console.log("페이지 변경");
+  authStore.getUserBookmarks(userId, 1);
+  dialog.value=false;
+
+});
 </script>
 
 <template>
   <div class="mypage_container">
     <div class="avatar">
       <v-avatar
-        image="https://cdn.class101.net/images/5afa6586-1ca7-4f6a-a9ba-be5fad43ab51"
+        :image="profileImg"
         size="100"
         color="info"
       >
@@ -50,7 +73,7 @@ const bookmarks = computed(() => authStore.otherUser.bookmarks);
 
       <div class="user_edit">
         <v-col cols="auto">
-          <div v-if="true">
+          <div v-if="!followYn">
             <v-row justify="center">
               <v-dialog v-model="dialog" persistent width="auto">
                 <template v-slot:activator="{ props }">
@@ -73,7 +96,7 @@ const bookmarks = computed(() => authStore.otherUser.bookmarks);
                     <v-btn
                       color="blue-darken-1"
                       variant="text"
-                      @click="dialog = false"
+                      @click="followUser"
                     >
                       네
                     </v-btn>
@@ -82,7 +105,7 @@ const bookmarks = computed(() => authStore.otherUser.bookmarks);
               </v-dialog>
             </v-row>
           </div>
-          <div v-if="false">
+          <div v-if="followYn">
             <v-row justify="center">
               <v-dialog v-model="dialog" persistent width="auto">
                 <template v-slot:activator="{ props }">
@@ -105,7 +128,7 @@ const bookmarks = computed(() => authStore.otherUser.bookmarks);
                     <v-btn
                       color="blue-darken-1"
                       variant="text"
-                      @click="dialog = false"
+                      @click="cancelFollow"
                     >
                       네
                     </v-btn>
@@ -144,7 +167,11 @@ const bookmarks = computed(() => authStore.otherUser.bookmarks);
                   <div style="padding-bottom: 10px"></div>
                 </v-col>
               </v-row>
-              <v-pagination :length="2"></v-pagination>
+              <v-pagination
+                v-model="page"
+                :length="totalPageCount"
+                :total-visible="5"
+              ></v-pagination>
             </v-window-item>
           </v-window>
         </v-card-text>

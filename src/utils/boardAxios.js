@@ -3,7 +3,16 @@ import { useAuthStore } from "../store/auth";
 import router from "../router";
 
 //비동기 요청 전 인터셉트
-// axios.interceptors.request.use((error) => Promise.reject(error));
+//  axios.interceptors.request.use(
+//  async(error)=>{
+//     const accessToken = localStorage.getItem(accessToken);
+//     const decoded = jwtDecode(accessToken.value); //토큰에서 유저정보 추출하여 유저정보 저장
+//        console.log("디코딩된 토큰 정보 :", decoded);
+//        console.log(Date.now() / 1000);
+    
+//  }
+
+//  );
 
 //비동기 요청 응답 수신 시, 인터셉트
 // axios.interceptors.response.use(

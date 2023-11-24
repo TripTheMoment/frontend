@@ -38,7 +38,7 @@ export default {
         <v-col cols="3" v-for="item in followings" :key="followings.id">
           <div style="width: 100px; height: 100px">
             <v-avatar
-              image="https://scontent-ssn1-1.xx.fbcdn.net/v/t1.6435-9/38770636_1833872913393032_3119054745558319104_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=7a1959&_nc_ohc=qnQTYJczRKAAX8jYY-H&_nc_ht=scontent-ssn1-1.xx&oh=00_AfBUgRTqJb9jpjfNPztB5vGI0UAiGU5ueELfuw-FO2p81A&oe=657E96EE"
+              :image="item.member.profileImgUrl"
               size="80"
               style="cursor: pointer"
               @click="moveUserPage(item.member.id)"

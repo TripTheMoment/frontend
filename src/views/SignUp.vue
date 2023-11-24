@@ -21,7 +21,7 @@ const signUpForm = ref({
 const signUp = async () => {
   try {
     await authStore.signUp(signUpForm.value);
-    router.push({ name: "Home" });
+    router.push({ name: "signupclear" });
     alert("회원가입 성공");
   } catch (error) {
     //등록 시 에러 발생

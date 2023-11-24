@@ -9,11 +9,11 @@ const articleStore = useArticleStore();
 const articles = computed(() => articleStore.articles);
 const totalPageCount = computed(() => articleStore.totalPageCount);
 const input_title = ref("");
-const page = ref(0);
+const page = ref(1);
 
 watch(page, () => {
   console.log("페이지 변경");
-  boardStore.getArticles(params.value);
+  boardStore.getArticles(this.page);
 });
 
 const params = ref({
@@ -34,7 +34,10 @@ const moveDetail = async (articleNo) => {
   await articleStore.getArticle(articleNo);
   router.push({ name: "boarddetail", params: { articleNo } });
 };
-
+watch(page, () => {
+  console.log("페이지 변경");
+  articleStore.getArticles(params.value);
+});
 articleStore.getArticles(params.value);
 </script>
 
@@ -85,7 +88,12 @@ articleStore.getArticles(params.value);
     </v-col>
   </v-row>
   <div style="padding-top: 100px"></div>
-  <v-pagination :length="2"></v-pagination>
+
+  <v-pagination
+    v-model="page"
+    :length="totalPageCount.value"
+    :total-visible="7"
+  ></v-pagination>
 </template>
 
 <style lang="scss">

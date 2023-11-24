@@ -43,6 +43,23 @@ const registReview = async () => {
     alert("등록 실패");
   }
 };
+const moveUserPage = (memberId) =>{
+      authStore.getUserInfo(memberId);
+      router.push({ name: "userpage" });
+    };
+const registBookmark =  () => {
+  try {
+    if (!confirm("북마크 등록하시겠습니까?")) return;
+
+     authStore.registBookmark(article.value.id);
+    
+    alert("등록 성공");
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
+};
 </script>
 
 <template>
@@ -66,7 +83,7 @@ const registReview = async () => {
           onerror="this.src='https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'"
         />
         <div class="bookmark">
-          <v-icon icon="mdi-bookmark-outline" @click=""></v-icon>
+          <v-icon icon="mdi-bookmark-outline" @click="registBookmark"></v-icon>
         </div>
       </div>
       <div class="att_description">
@@ -111,9 +128,9 @@ const registReview = async () => {
       <div class="att_commentbox">
         <v-col v-for="item in article.reviewResList">
           <div class="att_comment">
-            <v-avatar color="surface-variant"></v-avatar>
+            <v-avatar color="surface-variant" :image="item.member.profileImgUrl" @click="moveUserPage(item.member.id)"></v-avatar>
             <span style="padding-left: 10px"></span>
-            <span style="font-size: smaller">이름</span>
+            <span style="font-size: smaller">{{item.member.name}}</span>
             <span style="padding-left: 20px"></span>
 
             <v-rating

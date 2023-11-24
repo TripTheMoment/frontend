@@ -79,6 +79,16 @@ const routes = [
         name: "myinfoedit",
         component: () => import("@/views/MyInfoEdit.vue"),
       },
+      {
+        path: "/profileChange",
+        name: "profileChange",
+        component: () => import("@/views/profileImgChange.vue"),
+      },
+      {
+        path: "/signupclear",
+        name: "signupclear",
+        component: () => import("@/views/SignUpClear.vue"),
+      },
     ],
   },
 ];

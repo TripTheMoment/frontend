@@ -15,11 +15,14 @@ const commentForm = ref({
 console.log(route.params.articleNo);
 articleStore.getArticle(route.params.articleNo);
 const article = computed(() => articleStore.article);
-
+const userId = computed(() => authStore.user.userId);
 const goBack = () => {
-  router.go(-1);
+  router.push({ name: "boardlist" });
 };
-
+const moveUserPage = (memberId) => {
+  authStore.getUserInfo(memberId);
+  router.push({ name: "userpage" });
+};
 const registComment = async () => {
   try {
     if (!confirm("등록하시겠습니까?")) return;
@@ -28,6 +31,20 @@ const registComment = async () => {
 
     alert("등록 성공");
     articleStore.getArticle(route.params.articleNo);
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
+};
+const deleteArticle = async (articleNo) => {
+  try {
+    if (!confirm("삭제하시겠습니까?")) return;
+
+    await authStore.deleteArticle(articleNo);
+
+    alert("삭제 성공");
+    router.push({ name: "boardlist" });
   } catch (error) {
     //등록 시 에러 발생
     console.log("등록 에러 내용:", error);
@@ -52,11 +69,21 @@ const registComment = async () => {
     <div class="article_title">{{ article.title }}</div>
     <div style="padding-top: 20px"></div>
     <div class="article_user">
-      <v-avatar color="surface-variant"></v-avatar>
+      <v-avatar
+        :image="article.member.profileImgUrl"
+        color="info"
+        @click="moveUserPage(article.member.id)"
+      ></v-avatar>
       <span style="padding-left: 20px"></span>
       <span>{{ article.member.name }}</span>
       <span style="padding-left: 30px"></span>
       <span style="color: gray">{{ article.createdAt }}</span>
+      <span style="padding-left: 70%"></span>
+      <v-btn
+        v-if="article.member.id == userId"
+        @click="deleteArticle(article.id)"
+        >글 삭제
+      </v-btn>
     </div>
     <div style="padding-top: 20px"></div>
     <div class="content-box">
@@ -87,7 +114,11 @@ const registComment = async () => {
           <div class="commentbox">
             <v-col v-for="item in article.replies">
               <div class="comment">
-                <v-avatar color="surface-variant"></v-avatar>
+                <v-avatar
+                  :image="item.member.profileImgUrl"
+                  color="surface-variant"
+                  @click="moveUserPage(item.member.id)"
+                ></v-avatar>
                 <span style="padding-left: 10px"></span>
                 <span style="font-size: smaller">{{ item.member.name }}</span>
 

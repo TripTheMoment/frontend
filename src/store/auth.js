@@ -12,9 +12,11 @@ export const useAuthStore = defineStore(
       userEmail: "",
       userName: "",
       bookmarks: [],
+      articles: [],
       followerCnt: "",
       followingCnt: "",
       profileImg: "",
+      userId: "",
     });
     const otherUser = ref({
       userName: "",
@@ -23,6 +25,8 @@ export const useAuthStore = defineStore(
       followerCnt: "",
       followingCnt: "",
       profileImg: "",
+      userId: "",
+      followYn: "",
     });
     const follows = ref({
       followers: "",
@@ -31,25 +35,26 @@ export const useAuthStore = defineStore(
 
     const accessToken = ref(""); //jwt 토큰 정보W
     const refreshToken = ref(""); //jwt 토큰 정보W
+    const bookmarkTotalPageCount = ref(0);
+    const articlesTotalPageCount = ref(0);
+    const otherbookmarkTotalPageCount = ref(0);
 
     const login = async (loginForm) => {
-      const { headers } = await axios.post(
+      console.log("로그인 form : ", loginForm);
+
+      const response = await axios.post(
         "http://localhost/auth/login",
         loginForm
       );
+      if (response.data.success === false) {
+        throw error;
+      } else {
+        accessToken.value = response.headers.authorization;
+        refreshToken.value = response.headers.refreshtoken;
 
-      // const { headers } = await axios.post(
-      //   "http://localhost/auth/login",
-      //   loginForm
-      // );
-
-      console.log("로그인 요청 후 응답 데이터:", headers);
-
-      accessToken.value = headers.authorization;
-      refreshToken.value = headers.refreshtoken;
-
-      console.log("accessToken :", accessToken.value);
-      console.log("refreshToken :", refreshToken.value);
+        console.log("accessToken :", accessToken.value);
+        console.log("refreshToken :", refreshToken.value);
+      }
 
       // const decoded = jwtDecode(accessToken.value); //토큰에서 유저정보 추출하여 유저정보 저장
       // console.log("디코딩된 토큰 정보 :", decoded);
@@ -88,6 +93,7 @@ export const useAuthStore = defineStore(
       user.value.followerCnt = "";
       user.value.followingCnt = "";
       user.value.profileImg = "";
+      user.value.userId = "";
       accessToken.value = "";
       refreshToken.value = "";
     };
@@ -114,24 +120,22 @@ export const useAuthStore = defineStore(
         },
       });
     };
-    const getMyrBookmarks = async (memberId) => {
+    const getMyrBookmarks = async (memberId, pgno) => {
       const { data } = await axios.get(
-        `http://localhost/members/${memberId}/bookmarks`,
+        `http://localhost/members/${memberId}/bookmarks?page=${pgno - 1}`,
         {
           headers: {
             Authorization: accessToken.value,
-            RefreshToken: refreshToken.value,
           },
         }
       );
-
+      bookmarkTotalPageCount.value = data.data.totalPages;
       user.value.bookmarks = data.data.content;
     };
     const userDetail = async () => {
       const { data } = await axios.get("http://localhost/members/detail", {
         headers: {
           Authorization: accessToken.value,
-          RefreshToken: refreshToken.value,
         },
       });
       console.log("유저 상제 정보 조회 : ", data.data);
@@ -141,8 +145,10 @@ export const useAuthStore = defineStore(
       user.value.followerCnt = data.data.followerCnt;
       user.value.followingCnt = data.data.followingCnt;
       user.value.profileImg = data.data.profileImgUrl;
+      user.value.userId = data.data.id;
       console.log("유저 상제 정보 조회 : ", user);
-      // getMyrBookmarks(data.data.id);
+      getMyrBookmarks(data.data.id, 1);
+      getUserArticles(data.data.id, 1);
     };
 
     const userFollowers = async () => {
@@ -151,7 +157,6 @@ export const useAuthStore = defineStore(
         {
           headers: {
             Authorization: accessToken.value,
-            RefreshToken: refreshToken.value,
           },
         }
       );
@@ -166,7 +171,6 @@ export const useAuthStore = defineStore(
         {
           headers: {
             Authorization: accessToken.value,
-            RefreshToken: refreshToken.value,
           },
         }
       );
@@ -174,26 +178,25 @@ export const useAuthStore = defineStore(
       follows.value.followings = data.data;
     };
 
-    const getUserBookmarks = async (memberId) => {
+    const getUserBookmarks = async (memberId, pgno) => {
       const { data } = await axios.get(
-        `http://localhost/members/${memberId}/bookmarks`,
+        `http://localhost/members/${memberId}/bookmarks?page=${pgno - 1}`,
         {
           headers: {
             Authorization: accessToken.value,
-            RefreshToken: refreshToken.value,
           },
         }
       );
       console.log("다른 사용자 조회 : ", data.data);
 
       otherUser.value.bookmarks = data.data.content;
+      otherbookmarkTotalPageCount.value = data.data.totalPages;
     };
 
     const getUserInfo = async (memberId) => {
       const { data } = await axios.get(`http://localhost/members/${memberId}`, {
         headers: {
           Authorization: accessToken.value,
-          RefreshToken: refreshToken.value,
         },
       });
       console.log("다른 사용자 조회 : ", data.data);
@@ -202,7 +205,10 @@ export const useAuthStore = defineStore(
       otherUser.value.followerCnt = data.data.followerCnt;
       otherUser.value.followingCnt = data.data.followingCnt;
       otherUser.value.profileImg = data.data.profileImgUrl;
-      getUserBookmarks(memberId);
+      otherUser.value.userId = data.data.id;
+      otherUser.value.followYn = data.data.followYn;
+
+      getUserBookmarks(memberId, 1);
     };
 
     const writeArticle = async (writeForm, file) => {
@@ -252,6 +258,78 @@ export const useAuthStore = defineStore(
         },
       });
     };
+    const registBookmark = async (attractionNo) => {
+      console.log(
+        "registBookmark() 요청 : ",
+        `http://localhost/attractions/${attractionNo}/bookmarks`
+      );
+      console.log(accessToken.value);
+      await axios.get(
+        `http://localhost/attractions/${attractionNo}/bookmarks`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+    };
+
+    const getUserArticles = async (memberId, pgno) => {
+      const { data } = await axios.get(
+        `http://localhost/members/${memberId}/articles?page=${pgno - 1}`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+      articlesTotalPageCount.value = data.data.totalPages;
+      user.value.articles = data.data.content;
+    };
+    const followUser = async (memberId) => {
+      const { data } = await axios.get(
+        `http://localhost/members/follows/${memberId}`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+    };
+    const cancelFollow = async (memberId) => {
+      const { data } = await axios.delete(
+        `http://localhost/members/follows/${memberId}`,
+        {
+          headers: {
+            Authorization: accessToken.value,
+          },
+        }
+      );
+    };
+    const changeImg = async (file) => {
+      console.log("changeImg() 요청, 등록데이터 : ", file);
+      var form = new FormData();
+
+      Array.from(file).forEach((el) => {
+        form.append("file", el);
+      });
+
+      await axios.patch("http://localhost/members/profile", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: accessToken.value,
+        },
+      });
+    };
+    const deleteArticle = async (articleNo) => {
+      console.log("deleteArticle() 요청, 번호 : ", articleNo);
+
+      await axios.delete(`http://localhost/articles/${articleNo}`, {
+        headers: {
+          Authorization: accessToken.value,
+        },
+      });
+    };
     return {
       user,
       follows,
@@ -262,6 +340,7 @@ export const useAuthStore = defineStore(
       refreshToken,
       getUserBookmarks,
       getMyrBookmarks,
+      bookmarkTotalPageCount,
       getUserInfo,
       otherUser,
       login,
@@ -273,6 +352,12 @@ export const useAuthStore = defineStore(
       registComment,
       checkPassword,
       editInfo,
+      registBookmark,
+      getUserArticles,
+      followUser,
+      cancelFollow,
+      changeImg,
+      deleteArticle,
     };
   },
 

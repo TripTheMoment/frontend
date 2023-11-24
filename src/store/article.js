@@ -6,17 +6,15 @@ export const useArticleStore = defineStore("article", () => {
   /* ======목록 Start============== */
   const articles = ref([]);
   const totalPageCount = ref(0);
-  const getArticles = async (params) => {
+  const getArticles = async (pgno) => {
     const { data } = await axios.get(
-      `http://localhost/articles?page=${params.pgno}&title=${params.title}`,
-      params
+      `http://localhost/articles?page=${pgno - 1}&title=`
     );
-    console.log(
-      `http://localhost/articles?page=${params.pgno}&title=${params.title}`
-    );
+
     console.log("getArticles의 응답 데이터 : ", data.data);
     articles.value = data.data.content;
     totalPageCount.value = data.data.totalPages;
+    console.log("totalPageCount : ", totalPageCount);
   };
   /* ======목록 End================ */
 

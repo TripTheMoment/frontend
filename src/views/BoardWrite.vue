@@ -16,7 +16,7 @@ const titleRules = [
 const contentRules = [(v) => !!v || "내용을 입력해주세요"];
 
 function goBack() {
-  this.$router.go(-1);
+  router.push({ name: "boardlist" });
 }
 const registArticle = async () => {
   try {

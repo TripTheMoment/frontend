@@ -1,36 +1,26 @@
 <script>
 import router from "@/router";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useAuthStore } from "@/store/auth";
+
 const authStore = useAuthStore();
+
 export default {
   data: () => ({
     tab: null,
     dialog: false,
-    bookmark_page: 1,
-    article_page: 1,
-    articlelist: [
-      {
-        subject: "내가 쓴 글1",
-        date: "2023-11-17",
-      },
-      {
-        subject: "내가 쓴 글2",
-        date: "2023-11-16",
-      },
-      {
-        subject: "내가 쓴 글3",
-        date: "2023-11-15",
-      },
-      {
-        subject: "내가 쓴 글4",
-        date: "2023-11-15",
-      },
-    ],
+    bookmark_page: ref(1),
+    article_page: ref(1),
+
     userName: computed(() => authStore.user.userName),
     followerCnt: computed(() => authStore.user.followerCnt),
     followingCnt: computed(() => authStore.user.followingCnt),
     bookmarks: computed(() => authStore.user.bookmarks),
+    bookmarkTotalPageCount: computed(() => authStore.bookmarkTotalPageCount),
+    userId: computed(() => authStore.user.userId),
+    articles: computed(() => authStore.user.articles),
+    articlesTotalPageCount: computed(() => authStore.articlesTotalPageCount),
+    profileImg: computed(() => authStore.user.profileImg),
   }),
   methods: {
     moveFollower: async function () {
@@ -52,10 +42,34 @@ export default {
 
       router.push({ name: "attractiondetail", params: { id } });
     },
+    moveArticleDetail(articleNo) {
+      router.push({ name: "boarddetail", params: { articleNo } });
+    },
+    moveChangeImg() {
+      router.push({ name: "profileChange" });
+    },
   },
 
   created: function () {
     authStore.userDetail();
+  },
+  watch: {
+    bookmark_page: function () {
+      console.log("페이지 변경");
+      authStore.getMyrBookmarks(this.userId, this.bookmark_page);
+      console.log(this.bookmark_page);
+      console.log("총 페이지 수 : ", this.bookmarkTotalPageCount);
+    },
+    article_page: function () {
+      authStore.getUserArticles(this.userId, this.article_page);
+    },
+  },
+  filters: {
+    dateFormat: function (value) {
+      if (value) {
+        return moment(String(value)).format("YYYY-MM-DD");
+      }
+    },
   },
 };
 </script>
@@ -64,9 +78,10 @@ export default {
   <div class="mypage_container">
     <div class="avatar">
       <v-avatar
-        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA2RCfzWnxwzFf3zunQh6YTplZB30IqL6kmw&usqp=CAU"
+        :image="profileImg"
         size="100"
         color="info"
+        @click="moveChangeImg"
       >
       </v-avatar>
       <span style="margin-left: 20px"
@@ -134,21 +149,29 @@ export default {
               </v-row>
               <v-pagination
                 v-model="bookmark_page"
-                :length="3"
+                :length="bookmarkTotalPageCount"
                 :total-visible="5"
               ></v-pagination>
             </v-window-item>
             <v-window-item value="two">
               <div class="user_articlelist">
                 <ul>
-                  <li v-for="article in articlelist" v-bind:key="article">
-                    {{ article.subject
-                    }}<span class="mypage_article">{{ article.date }}</span>
+                  <li
+                    v-for="article in articles"
+                    v-bind:key="article"
+                    @click="moveArticleDetail(article.id)"
+                  >
+                    {{ article.title
+                    }}<span class="mypage_article">{{ article.createAt }}</span>
                   </li>
                 </ul>
               </div>
               <div style="padding-top: 100px"></div>
-              <v-pagination :length="2"></v-pagination>
+              <v-pagination
+                v-model="article_page"
+                :length="articlesTotalPageCount"
+                :total-visible="5"
+              ></v-pagination>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -189,12 +212,12 @@ export default {
 }
 
 .card_content {
-  height: 65vh;
+  height: 70vh;
   background-color: rgb(231, 239, 246);
 }
 .user_articlelist {
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 30%;
+  margin-right: 30%;
 }
 ul {
   list-style-type: none;
