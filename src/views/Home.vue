@@ -128,25 +128,23 @@
     </div>
   </div>
 
-  <div style="margin-bottom: 80px;"></div>
+  <div style="margin-bottom: 80px"></div>
   <div class="sub-main">
     <div class="recommend_title">
       <h2><strong>여행 게시판</strong></h2>
     </div>
-    <div class="item-wrap" >
+    <div class="item-wrap">
       <div class="item hover12" @click="moveDetail1">
         <figure>
           <img
             class="item-img hover1"
             src="https://i3.ruliweb.com/img/23/04/25/187b7f91df428198a.png"
             alt="pbook1"
-            
           />
         </figure>
         <div class="item-title">성산일출봉</div>
-        
       </div>
-      <div class="item hover12"  @click="moveDetail2">
+      <div class="item hover12" @click="moveDetail2">
         <figure>
           <img
             class="item-img hover1"
@@ -155,9 +153,8 @@
           />
         </figure>
         <div class="item-title">여긴 어딜까</div>
-       
       </div>
-      <div class="item hover12"  @click="moveDetail3">
+      <div class="item hover12" @click="moveDetail3">
         <figure>
           <img
             class="item-img hover1"
@@ -166,9 +163,8 @@
           />
         </figure>
         <div class="item-title">비둘기낭 폭포</div>
-     
       </div>
-      <div class="item hover12"  @click="moveDetail4">
+      <div class="item hover12" @click="moveDetail4">
         <figure>
           <img
             class="item-img hover1"
@@ -177,12 +173,10 @@
           />
         </figure>
         <div class="item-title">바다다</div>
-     
       </div>
     </div>
   </div>
   <div style="padding: 20px"> </div>
-  
 </template>
 
 <script setup>
@@ -195,7 +189,7 @@ const articleStore = useArticleStore();
 const index = ref(0);
 const items = [
   {
-    src: "./src/assets/img/main1.jpg",
+    src: "./src/assets/img/img1.JPG",
   },
   {
     src: "./src/assets/img/main2.png",
@@ -274,24 +268,20 @@ function moveBoard() {
   router.push({ name: "boardlist" });
 }
 const moveDetail1 = async () => {
-
   await articleStore.getArticle(7);
-  router.push({ name: "boarddetail", params:  {articleNo : 7} });
+  router.push({ name: "boarddetail", params: { articleNo: 7 } });
 };
 const moveDetail2 = async () => {
-  
   await articleStore.getArticle(5);
-  router.push({ name: "boarddetail", params: {articleNo : 5}  });
+  router.push({ name: "boarddetail", params: { articleNo: 5 } });
 };
 const moveDetail3 = async () => {
-
   await articleStore.getArticle(4);
-  router.push({ name: "boarddetail", params:   {articleNo : 4} });
+  router.push({ name: "boarddetail", params: { articleNo: 4 } });
 };
 const moveDetail4 = async () => {
-  
   await articleStore.getArticle(2);
-  router.push({ name: "boarddetail", params:   {articleNo : 2}  });
+  router.push({ name: "boarddetail", params: { articleNo: 2 } });
 };
 const theme = {
   backgroundcolor: colors[0],

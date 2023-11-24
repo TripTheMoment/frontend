@@ -80,8 +80,8 @@ export default {
       <v-avatar
         :image="profileImg"
         size="100"
-        color="info"
         @click="moveChangeImg"
+        style="background-color: lightgray; cursor: pointer"
       >
       </v-avatar>
       <span style="margin-left: 20px"

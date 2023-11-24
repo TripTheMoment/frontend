@@ -11,9 +11,12 @@
     <v-btn variant="text" @click="moveBoardList()">여행 게시판</v-btn>
     <v-btn v-if="!isLogin" variant="text" @click="moveLogin()">로그인</v-btn>
     <template v-else>
-      <v-avatar style="margin-left: 15px ; cursor: pointer" color="info" :image="userProfile" @click="moveMyPage "></v-avatar>
+      <v-avatar
+        style="margin-left: 15px; cursor: pointer; background-color: lightgray"
+        :image="userProfile"
+        @click="moveMyPage"
+      ></v-avatar>
       <li @click="moveMyPage" style="padding-left: 5px">
-        
         {{ userName }}
       </li>
       <span style="padding-left: 20px"></span>
