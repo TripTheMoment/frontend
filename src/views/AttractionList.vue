@@ -154,6 +154,7 @@ const search = () => {
       </v-col>
     </v-row>
     <div style="padding-top: 100px"></div>
+
     <v-pagination
       v-model="page"
       :length="totalPageCount - 1"

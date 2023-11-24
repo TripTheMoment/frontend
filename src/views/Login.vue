@@ -16,7 +16,7 @@ const loginForm = ref({
 const login = async () => {
   try {
     await authStore.login(loginForm.value);
-    router.push("/");
+    router.push({ name: "Home" });
   } catch (error) {
     console.log("로그인 실패 에러:", error);
     alert("아이디 또는 비밀번호가 일치하지 않습니다.");
@@ -97,11 +97,11 @@ body {
   font-size: 14px;
 }
 .form input:hover {
-  background-color: rgb(188, 216, 188);
+  background-color: rgb(237, 245, 237);
   transition: all 1s ease 0s;
 }
 .form input:focus {
-  background-color: rgb(188, 216, 188);
+  background-color: rgb(240, 242, 240);
   transition: all 1s ease 0s;
 }
 .form button {

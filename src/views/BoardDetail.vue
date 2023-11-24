@@ -1,14 +1,55 @@
-<script>
-import router from "@/router";
-export default {
-  methods: {
-    moveBoardList: function () {
-      router.push({ name: "boardlist" });
-    },
-    goBack() {
-      router.go(-1);
-    },
-  },
+<script setup>
+import { useArticleStore } from "@/store/article";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/store/auth";
+
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+const articleStore = useArticleStore();
+const commentForm = ref({
+  content: "",
+});
+
+console.log(route.params.articleNo);
+articleStore.getArticle(route.params.articleNo);
+const article = computed(() => articleStore.article);
+const userId = computed(() => authStore.user.userId);
+const goBack = () => {
+  router.push({ name: "boardlist" });
+};
+const moveUserPage = (memberId) => {
+  authStore.getUserInfo(memberId);
+  router.push({ name: "userpage" });
+};
+const registComment = async () => {
+  try {
+    if (!confirm("등록하시겠습니까?")) return;
+
+    await authStore.registComment(commentForm.value, article.value.id);
+
+    alert("등록 성공");
+    articleStore.getArticle(route.params.articleNo);
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
+};
+const deleteArticle = async (articleNo) => {
+  try {
+    if (!confirm("삭제하시겠습니까?")) return;
+
+    await authStore.deleteArticle(articleNo);
+
+    alert("삭제 성공");
+    router.push({ name: "boardlist" });
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
 };
 </script>
 
@@ -25,43 +66,31 @@ export default {
       여행 게시판
     </div>
     <hr size="1" color="black" width="100%" />
-    <div class="article_title">글 제목</div>
+    <div class="article_title">{{ article.title }}</div>
     <div style="padding-top: 20px"></div>
     <div class="article_user">
-      <v-avatar color="surface-variant"></v-avatar>
+      <v-avatar
+        :image="article.member.profileImgUrl"
+        color="info"
+        @click="moveUserPage(article.member.id)"
+      ></v-avatar>
       <span style="padding-left: 20px"></span>
-      <span>이름</span>
+      <span>{{ article.member.name }}</span>
       <span style="padding-left: 30px"></span>
-      <span style="color: gray">2023-11-15 16:33:25</span>
+      <span style="color: gray">{{ article.createdAt }}</span>
+      <span style="padding-left: 70%"></span>
+      <v-btn
+        v-if="article.member.id == userId"
+        @click="deleteArticle(article.id)"
+        >글 삭제
+      </v-btn>
     </div>
     <div style="padding-top: 20px"></div>
     <div class="content-box">
-      <img
-        class="article_image"
-        src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F264CC83C5858832B31"
-      />
+      <img class="article_image" :src="article.imgUrl" />
       <div class="article_content">
         <div>
-          Baby, got me looking so crazy 빠져버리는 daydream Got me feeling you
-          너도 말해줄래 누가 내게 뭐라든 남들과는 달라 넌 Maybe you could be the
-          one 날 믿어봐 한번 I'm not looking for just fun Maybe I could be the
-          one Oh baby 예민하대 나 lately 너 없이는 매일 매일이 yeah 재미없어
-          어쩌지 I just want you Call my phone right now I just wanna hear
-          you're mine 'Cause I know what you like boy You're my chemical hype
-          boy 내 지난날들은 눈 뜨면 잊는 꿈 Hype boy 너만 원해 Hype boy 내가
-          전해 And we can go high 말해봐 yeah 느껴봐 mm mm Take him to the sky
-          You know I hype you boy 눈을 감아 말해봐 yeah 느껴봐 mm mm Take him to
-          the sky You know I hype you boy 잠에 들려고 잠에 들려 해도 네 생각에
-          또 새벽 세 시 uh-oh 알려줄 거야 they can't have you no more 봐봐 여기
-          내 이름 써있다고 누가 내게 뭐라든 남들과는 달라 넌 Maybe you could be
-          the one 날 믿어봐 한번 I'm not looking for just fun Maybe I could be
-          the one Oh baby 예민하대 나 lately 너 없이는 매일 매일이 yeah 재미없어
-          어쩌지 I just want you Call my phone right now I just wanna hear
-          you're mine 'Cause I know what you like boy You're my chemical hype
-          boy 내 지난날들은 눈 뜨면 잊는 꿈 Hype boy 너만 원해 Hype boy 내가
-          전해 And we can go high 말해봐 yeah 느껴봐 mm mm Take him to the sky
-          You know I hype you boy 눈을 감아 말해봐 yeah 느껴봐 mm mm Take him to
-          the sky You know I hype you boy
+          {{ article.content }}
         </div>
       </div>
       <div style="padding-top: 50px"></div>
@@ -71,23 +100,32 @@ export default {
         </div>
         <div style="padding-top: 20px"></div>
         <div class="article_rating">
-          <div class="textarea">
-            <v-textarea
-              label="댓글을 남겨주세요"
-              variant="outlined"
-            ></v-textarea>
-            <v-btn class="review_btn"> 등록 </v-btn>
-          </div>
+          <form @submit.prevent="registComment">
+            <div class="textarea">
+              <v-textarea
+                v-model="commentForm.content"
+                label="댓글을 남겨주세요"
+                variant="outlined"
+              ></v-textarea>
+              <v-btn class="review_btn" type="submit"> 등록 </v-btn>
+            </div>
+          </form>
+
           <div class="commentbox">
-            <v-col v-for="item in 12">
+            <v-col v-for="item in article.replies">
               <div class="comment">
-                <v-avatar color="surface-variant"></v-avatar>
+                <v-avatar
+                  :image="item.member.profileImgUrl"
+                  color="surface-variant"
+                  @click="moveUserPage(item.member.id)"
+                ></v-avatar>
                 <span style="padding-left: 10px"></span>
-                <span style="font-size: smaller">이름</span>
+                <span style="font-size: smaller">{{ item.member.name }}</span>
+
                 <span style="padding-left: 20px"></span>
 
                 <div style="padding-top: 20px"></div>
-                <div>경치도 좋고 분위기도 좋아요.</div>
+                <div>{{ item.content }}</div>
                 <div style="padding-top: 50px"></div>
                 <hr size="1" color="lightgray" width="100%" />
               </div>

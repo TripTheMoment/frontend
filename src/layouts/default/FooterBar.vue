@@ -13,8 +13,8 @@
 <style scoped>
 .footer {
   /* clear: both; */
-  margin: 120px 130px;
-  width: 1200px;
+  margin: 140px 130px;
+  width: 1300px;
   height: 10px;
 }
 

@@ -1,4 +1,8 @@
 <script setup>
+import { ref } from "vue";
+import { useAuthStore } from "@/store/auth";
+import router from "@/router";
+const authStore = useAuthStore();
 const emailRules = [
   (v) => !!v || "이름을 입력해주세요",
   (v) => (v && v.length <= 6) || "이름은 6글자를 넘을 수 없습니다",
@@ -6,6 +10,24 @@ const emailRules = [
 
 const alert = () => {
   console.log("dfdf");
+};
+
+const signUpForm = ref({
+  email: "",
+  password: "",
+  name: "",
+});
+
+const signUp = async () => {
+  try {
+    await authStore.signUp(signUpForm.value);
+    router.push({ name: "signupclear" });
+    alert("회원가입 성공");
+  } catch (error) {
+    //등록 시 에러 발생
+    console.log("등록 에러 내용:", error);
+    alert("등록 실패");
+  }
 };
 </script>
 
@@ -15,22 +37,33 @@ const alert = () => {
       <div style="padding: 2px"> </div>
       <p style="font-size: 25px">회원가입</p>
       <div style="padding: 5px"> </div>
-      <form>
+      <form @submit.prevent="signUp">
         <input
           type="text"
           name="email"
           :rules="emailRules"
           placeholder="이메일"
+          v-model="signUpForm.email"
           @blur="alert"
         />
 
-        <input type="password" name="password" placeholder="비밀번호" />
+        <input
+          type="password"
+          name="password"
+          placeholder="비밀번호"
+          v-model="signUpForm.password"
+        />
         <input
           type="password"
           name="passwordCheck"
           placeholder="비밀번호 확인"
         />
-        <input type="text" name="username" placeholder="이름" />
+        <input
+          type="text"
+          name="username"
+          placeholder="이름"
+          v-model="signUpForm.name"
+        />
         <button type="submit">가입하기</button>
       </form>
       <div style="padding: 3px"></div>

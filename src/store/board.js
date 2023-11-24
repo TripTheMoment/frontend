@@ -9,7 +9,7 @@ export const useBoardStore = defineStore("board", () => {
   const totalPageCount = ref(0);
   const getArticles = async (params) => {
     const { data } = await axios.post(
-      `http://localhost/attractions?page=${params.pgno}`,
+      `http://localhost/attractions?page=${params.pgno-1}`,
       params
     );
     console.log(`http://localhost/attractions?page=${params.pgno}`);

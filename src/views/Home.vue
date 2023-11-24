@@ -128,60 +128,70 @@
     </div>
   </div>
 
-  <div style="padding: 20px"> </div>
-  <div class="mini-board-container">
-    <div class="mini-board" style="float: left; width: 33%; padding: 10px">
-      <h2>여행 뉴스</h2>
-      <div style="padding: 10px"> </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 뉴스 1
-      </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 뉴스 2
-      </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 뉴스3
-      </div>
+  <div style="margin-bottom: 80px;"></div>
+  <div class="sub-main">
+    <div class="recommend_title">
+      <h2><strong>여행 게시판</strong></h2>
     </div>
-    <div class="mini-board" style="float: left; width: 33%; padding: 10px">
-      <h2 style="cursor: pointer" @click="moveBoard">여행 게시판</h2>
-      <div style="padding: 10px"> </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 게시판 1
+    <div class="item-wrap" >
+      <div class="item hover12" @click="moveDetail1">
+        <figure>
+          <img
+            class="item-img hover1"
+            src="https://i3.ruliweb.com/img/23/04/25/187b7f91df428198a.png"
+            alt="pbook1"
+            
+          />
+        </figure>
+        <div class="item-title">성산일출봉</div>
+        
       </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 게시판 2
+      <div class="item hover12"  @click="moveDetail2">
+        <figure>
+          <img
+            class="item-img hover1"
+            src="https://i2.ruliweb.com/img/23/04/25/187b7f8babf28198a.png"
+            alt="pbook2"
+          />
+        </figure>
+        <div class="item-title">여긴 어딜까</div>
+       
       </div>
-      <div
-        v-ripple="{ center: true }"
-        class="text-xs-center elevation-2 pa-5 headline"
-      >
-        여행 게시판 3
+      <div class="item hover12"  @click="moveDetail3">
+        <figure>
+          <img
+            class="item-img hover1"
+            src="https://i1.ruliweb.com/img/23/04/25/187b7f88eeb28198a.png"
+            alt="pbook3"
+          />
+        </figure>
+        <div class="item-title">비둘기낭 폭포</div>
+     
+      </div>
+      <div class="item hover12"  @click="moveDetail4">
+        <figure>
+          <img
+            class="item-img hover1"
+            src="https://i1.ruliweb.com/img/23/04/25/187b7f8f6ef28198a.png"
+            alt="pbook4"
+          />
+        </figure>
+        <div class="item-title">바다다</div>
+     
       </div>
     </div>
   </div>
+  <div style="padding: 20px"> </div>
+  
 </template>
 
 <script setup>
 import { ref } from "vue";
 import router from "@/router";
 import { useBoardStore } from "@/store/board";
+import { useArticleStore } from "@/store/article";
 const boardStore = useBoardStore();
+const articleStore = useArticleStore();
 const index = ref(0);
 const items = [
   {
@@ -263,7 +273,26 @@ function changeColorRight() {
 function moveBoard() {
   router.push({ name: "boardlist" });
 }
+const moveDetail1 = async () => {
 
+  await articleStore.getArticle(7);
+  router.push({ name: "boarddetail", params:  {articleNo : 7} });
+};
+const moveDetail2 = async () => {
+  
+  await articleStore.getArticle(5);
+  router.push({ name: "boarddetail", params: {articleNo : 5}  });
+};
+const moveDetail3 = async () => {
+
+  await articleStore.getArticle(4);
+  router.push({ name: "boarddetail", params:   {articleNo : 4} });
+};
+const moveDetail4 = async () => {
+  
+  await articleStore.getArticle(2);
+  router.push({ name: "boarddetail", params:   {articleNo : 2}  });
+};
 const theme = {
   backgroundcolor: colors[0],
 };

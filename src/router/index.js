@@ -45,7 +45,7 @@ const routes = [
         component: () => import("@/views/BoardWrite.vue"),
       },
       {
-        path: "/boarddetail",
+        path: "/boarddetail/:articleNo",
         name: "boarddetail",
         component: () => import("@/views/BoardDetail.vue"),
       },
@@ -78,6 +78,16 @@ const routes = [
         path: "/myinfoedit",
         name: "myinfoedit",
         component: () => import("@/views/MyInfoEdit.vue"),
+      },
+      {
+        path: "/profileChange",
+        name: "profileChange",
+        component: () => import("@/views/profileImgChange.vue"),
+      },
+      {
+        path: "/signupclear",
+        name: "signupclear",
+        component: () => import("@/views/SignUpClear.vue"),
       },
     ],
   },
